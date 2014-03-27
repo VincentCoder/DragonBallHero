@@ -159,14 +159,14 @@ public class CardController : MonoBehaviour
                             if (gesture.TotalMove.y > MyTool.CardWidth + MyTool.UnitGap)
                             {
 								Debug.Log("1111111111111");
-								//this.TweenMoveTo(unitDragTo.RowIndex, unitDragTo.ColumnIndex);
-                                this.myTransform.localPosition = posDragTo;
+								this.TweenMoveTo(unitDragTo.RowIndex, unitDragTo.ColumnIndex);
+                                //this.myTransform.localPosition = posDragTo;
                             }
                             else if (gesture.TotalMove.y < 0)
                             {
 								Debug.Log("22222222222222");
-								//this.TweenMoveTo(this.Card.RowIndex, this.Card.ColumnIndex);
-                                this.myTransform.localPosition = MyTool.CalculatePositionByRowAndColumn(this.Card.RowIndex, this.Card.ColumnIndex);
+								this.TweenMoveTo(this.Card.RowIndex, this.Card.ColumnIndex);
+                                //this.myTransform.localPosition = MyTool.CalculatePositionByRowAndColumn(this.Card.RowIndex, this.Card.ColumnIndex);
                             }
                             else
                             {
@@ -183,12 +183,14 @@ public class CardController : MonoBehaviour
                             if (gesture.TotalMove.y < - (MyTool.CardWidth + MyTool.UnitGap))
                             {
 								Debug.Log("1111111111111");
-                                this.myTransform.localPosition = posDragTo;
+                                this.TweenMoveTo(unitDragTo.RowIndex, unitDragTo.ColumnIndex);
+                                //this.myTransform.localPosition = posDragTo;
                             }
                             else if (gesture.TotalMove.y > 0)
                             {
 								Debug.Log("22222222222222");
-                                this.myTransform.localPosition = MyTool.CalculatePositionByRowAndColumn(this.Card.RowIndex, this.Card.ColumnIndex);
+                                this.TweenMoveTo(this.Card.RowIndex, this.Card.ColumnIndex);
+                                //this.myTransform.localPosition = MyTool.CalculatePositionByRowAndColumn(this.Card.RowIndex, this.Card.ColumnIndex);
                             }
                             else
                             {
@@ -205,12 +207,14 @@ public class CardController : MonoBehaviour
                             if (gesture.TotalMove.x < - (MyTool.CardWidth + MyTool.UnitGap))
                             {
 								Debug.Log("1111111111111");
-                                this.myTransform.localPosition = posDragTo;
+                                this.TweenMoveTo(unitDragTo.RowIndex, unitDragTo.ColumnIndex);
+                                //this.myTransform.localPosition = posDragTo;
                             }
                             else if (gesture.TotalMove.x > 0)
                             {
 								Debug.Log("22222222222222");
-                                this.myTransform.localPosition = MyTool.CalculatePositionByRowAndColumn(this.Card.RowIndex, this.Card.ColumnIndex);
+                                this.TweenMoveTo(this.Card.RowIndex, this.Card.ColumnIndex);
+                                //this.myTransform.localPosition = MyTool.CalculatePositionByRowAndColumn(this.Card.RowIndex, this.Card.ColumnIndex);
                             }
                             else
                             {
@@ -227,12 +231,14 @@ public class CardController : MonoBehaviour
                             if (gesture.TotalMove.x > MyTool.CardWidth + MyTool.UnitGap)
                             {
 								Debug.Log("1111111111111");
-                                this.myTransform.localPosition = posDragTo;
+                                this.TweenMoveTo(unitDragTo.RowIndex, unitDragTo.ColumnIndex);
+                                //this.myTransform.localPosition = posDragTo;
                             }
                             else if (gesture.TotalMove.x < 0)
                             {
 								Debug.Log("22222222222222");
-                                this.myTransform.localPosition = MyTool.CalculatePositionByRowAndColumn(this.Card.RowIndex, this.Card.ColumnIndex);
+                                this.TweenMoveTo(this.Card.RowIndex, this.Card.ColumnIndex);
+                                //this.myTransform.localPosition = MyTool.CalculatePositionByRowAndColumn(this.Card.RowIndex, this.Card.ColumnIndex);
 							}
 							else
 							{
@@ -329,7 +335,7 @@ public class CardController : MonoBehaviour
 		tweenPos.from = this.myTransform.localPosition;
 		tweenPos.to = MyTool.CalculatePositionByRowAndColumn(rowId, columnId);
 		//tweenPos.duration = Vector3.Distance(tweenPos.from, tweenPos.to) / this.TweenMoveSpeed;
-		tweenPos.duration = 0.2f;
+		tweenPos.duration = 0.3f;
         tweenPos.onFinished.Add(new EventDelegate(callback));
 		tweenPos.PlayForward();
 	}
