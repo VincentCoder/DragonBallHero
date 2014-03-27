@@ -1,5 +1,7 @@
 ﻿#region
 
+using System;
+
 using UnityEngine;
 
 #endregion
@@ -104,9 +106,18 @@ public class CardController : MonoBehaviour
                  && this.Card.CardType != CardType.Wukong_11)
         {
 			Debug.Log("Merge 222222222");
-            UnitManager.GetInstance().ClearUnitById(this.Card.CardId);
-            targetUnit.CardController.ResetCardType(MyTool.GetNextLevelCardType(this.Card.CardType));
-            this.DestroySelf();
+            //EventDelegate.Callback callback = delegate
+           //     {
+           //         UnitManager.GetInstance().ClearUnitById(this.Card.CardId);
+           //         targetUnit.CardController.ResetCardType(MyTool.GetNextLevelCardType(this.Card.CardType));
+            //        this.DestroySelf();
+           //     };
+            this.TweenMoveTo(targetUnit.RowIndex, targetUnit.ColumnIndex, delegate
+            {
+                UnitManager.GetInstance().ClearUnitById(this.Card.CardId);
+                targetUnit.CardController.ResetCardType(MyTool.GetNextLevelCardType(this.Card.CardType));
+                this.DestroySelf();
+            });
         }
 		else
 		{
@@ -306,7 +317,7 @@ public class CardController : MonoBehaviour
         }
     }
 	
-	public void TweenMoveTo(int rowId, int columnId)
+	public void TweenMoveTo(int rowId, int columnId, EventDelegate.Callback callback = null)
 	{
 		TweenPosition tweenPos = this.gameObject.GetComponent<TweenPosition>();
 		if(tweenPos == null)
@@ -319,7 +330,8 @@ public class CardController : MonoBehaviour
 		tweenPos.to = MyTool.CalculatePositionByRowAndColumn(rowId, columnId);
 		//tweenPos.duration = Vector3.Distance(tweenPos.from, tweenPos.to) / this.TweenMoveSpeed;
 		tweenPos.duration = 0.2f;
-		tweenPos.Play();
+        tweenPos.onFinished.Add(new EventDelegate(callback));
+		tweenPos.PlayForward();
 	}
 
     #endregion

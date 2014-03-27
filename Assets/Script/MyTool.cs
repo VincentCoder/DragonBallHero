@@ -62,6 +62,11 @@ public class MyTool
         return rowId * ColumnCount + columnId;
     }
 
+    public static GameObject CreateGameObject(string path)
+    {
+        return (GameObject)Object.Instantiate(Resources.Load(path));
+    }
+
     public static CardType GetNextLevelCardType(CardType cardType)
     {
         switch (cardType)

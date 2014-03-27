@@ -59,7 +59,7 @@ public class UnitManager
 
     public void AddCard(int cardId, CardType cardType)
     {
-        GameObject cardObj = (GameObject)Object.Instantiate(Resources.Load("Card"));
+        GameObject cardObj = MyTool.CreateGameObject("Card");
         int rowId;
         int columnId = MyTool.CalculateRowAndColumnByUnitId(cardId, out rowId);
         if (rowId == -1 || columnId == -1)
