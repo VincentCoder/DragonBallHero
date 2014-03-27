@@ -17,6 +17,8 @@ public class CardController : MonoBehaviour
     private UISprite frameSprite;
 
     private Transform myTransform;
+	
+	public bool CanMove;
 
     #endregion
 
@@ -77,12 +79,14 @@ public class CardController : MonoBehaviour
         this.myTransform = this.transform;
         this.cardSprite = this.myTransform.FindChild("Card").GetComponent<UISprite>();
         this.frameSprite = this.myTransform.FindChild("Frame").GetComponent<UISprite>();
+		this.CanMove = false;
     }
 
     private void MergeWithUnit(Unit targetUnit)
     {
         if (targetUnit != null && targetUnit.CardController == null)
         {
+			Debug.Log("Merge 1111111");
             UnitManager.GetInstance().ClearUnitById(this.Card.CardId);
             this.Card.CardId = targetUnit.UnitId;
             this.Card.RowIndex = targetUnit.RowIndex;
@@ -95,55 +99,41 @@ public class CardController : MonoBehaviour
         else if (targetUnit != null && targetUnit.CardController.Card.CardType == this.Card.CardType
                  && this.Card.CardType != CardType.Wukong_11)
         {
+			Debug.Log("Merge 222222222");
             UnitManager.GetInstance().ClearUnitById(this.Card.CardId);
             targetUnit.CardController.ResetCardType(MyTool.GetNextLevelCardType(this.Card.CardType));
             this.DestroySelf();
         }
 		else
 		{
+			Debug.Log("Merge 333333333333");
 			this.myTransform.localPosition = MyTool.CalculatePositionByRowAndColumn(
                 this.Card.RowIndex,
                 this.Card.ColumnIndex);
 		}
     }
 
-    private void OnDrag(DragGesture gesture)
+    public void OnDragCard(DragGesture gesture, MyDirection direction)
     {
+		this.dragDirection = direction;
         if (gesture.Phase == ContinuousGesturePhase.Started)
         {
-            if (Mathf.Abs(gesture.DeltaMove.x) < Mathf.Abs(gesture.DeltaMove.y))
-            {
-                if (gesture.DeltaMove.y > 0)
-                {
-                    this.dragDirection = MyDirection.Up;
-                }
-                else
-                {
-                    this.dragDirection = MyDirection.Down;
-                }
-            }
-            else
-            {
-                if (gesture.DeltaMove.x > 0)
-                {
-                    this.dragDirection = MyDirection.Right;
-                }
-                else
-                {
-                    this.dragDirection = MyDirection.Left;
-                }
-            }
+			Unit unitDragTo = UnitManager.GetInstance().GetUnitInDirection(this.Card.CardId, this.dragDirection);
+			if(unitDragTo != null && (unitDragTo.CardController == null || unitDragTo.CardController.CanMove || unitDragTo.CardController.Card.CardType == this.Card.CardType))
+			{
+				this.CanMove = true;
+			}
 			Debug.Log("DragGesture Started : " + this.Card.CardId + " " + this.dragDirection + " " + this.myTransform.localPosition);
         } 
         else if (gesture.Phase == ContinuousGesturePhase.Updated)
         {
 			Unit unitDragTo = UnitManager.GetInstance().GetUnitInDirection(this.Card.CardId, this.dragDirection);
-			Debug.Log("DragGesture Updated : " + this.Card.CardId + " " + unitDragTo);
-            if(unitDragTo != null) Debug.Log(" unitDragTo.CardController " + unitDragTo.CardController );
+			Debug.Log("DragGesture Updated : " + this.Card.CardId + "_" + this.Card.RowIndex + "_" + this.Card.ColumnIndex + " " + unitDragTo);
+            if(unitDragTo != null) Debug.Log(" unitDragTo.CardController " + unitDragTo.CardController + " " + unitDragTo.UnitId + " " + unitDragTo.RowIndex + " " + unitDragTo.ColumnIndex);
 			if(unitDragTo != null && unitDragTo.CardController != null) Debug.Log(" unitDragTo.CardController.Card.CardType " + unitDragTo.CardController.Card.CardType + " this.Card.CardType  " + this.Card.CardType);
-            if (unitDragTo != null
-                && (unitDragTo.CardController == null || unitDragTo.CardController.Card.CardType == this.Card.CardType))
+            if (this.CanMove)
             {
+				this.Card.CardState = CardState.Moving;
                 Vector3 posDragTo = MyTool.CalculatePositionByRowAndColumn(unitDragTo.RowIndex, unitDragTo.ColumnIndex);
 				
                 switch (this.dragDirection)
@@ -152,14 +142,17 @@ public class CardController : MonoBehaviour
                         {
                             if (gesture.TotalMove.y > MyTool.CardWidth + MyTool.UnitGap)
                             {
+								Debug.Log("1111111111111");
                                 this.myTransform.localPosition = posDragTo;
                             }
                             else if (gesture.TotalMove.y < 0)
                             {
+								Debug.Log("22222222222222");
                                 this.myTransform.localPosition = MyTool.CalculatePositionByRowAndColumn(this.Card.RowIndex, this.Card.ColumnIndex);
                             }
                             else
                             {
+								Debug.Log("333333333333");
                                 this.myTransform.localPosition += new Vector3(
                                     0,
                                     gesture.DeltaMove.y,
@@ -171,14 +164,17 @@ public class CardController : MonoBehaviour
                         {
                             if (gesture.TotalMove.y < - (MyTool.CardWidth + MyTool.UnitGap))
                             {
+								Debug.Log("1111111111111");
                                 this.myTransform.localPosition = posDragTo;
                             }
                             else if (gesture.TotalMove.y > 0)
                             {
+								Debug.Log("22222222222222");
                                 this.myTransform.localPosition = MyTool.CalculatePositionByRowAndColumn(this.Card.RowIndex, this.Card.ColumnIndex);
                             }
                             else
                             {
+								Debug.Log("333333333333");
                                 this.myTransform.localPosition += new Vector3(
                                     0,
                                     gesture.DeltaMove.y,
@@ -190,14 +186,17 @@ public class CardController : MonoBehaviour
                         {
                             if (gesture.TotalMove.x < - (MyTool.CardWidth + MyTool.UnitGap))
                             {
+								Debug.Log("1111111111111");
                                 this.myTransform.localPosition = posDragTo;
                             }
                             else if (gesture.TotalMove.x > 0)
                             {
+								Debug.Log("22222222222222");
                                 this.myTransform.localPosition = MyTool.CalculatePositionByRowAndColumn(this.Card.RowIndex, this.Card.ColumnIndex);
                             }
                             else
                             {
+								Debug.Log("333333333333");
                                 this.myTransform.localPosition += new Vector3(
                                     gesture.DeltaMove.x,
                                     0,
@@ -209,14 +208,17 @@ public class CardController : MonoBehaviour
                         {
                             if (gesture.TotalMove.x > MyTool.CardWidth + MyTool.UnitGap)
                             {
+								Debug.Log("1111111111111");
                                 this.myTransform.localPosition = posDragTo;
                             }
                             else if (gesture.TotalMove.x < 0)
                             {
+								Debug.Log("22222222222222");
                                 this.myTransform.localPosition = MyTool.CalculatePositionByRowAndColumn(this.Card.RowIndex, this.Card.ColumnIndex);
 							}
 							else
 							{
+								Debug.Log("333333333333");
 								this.myTransform.localPosition += new Vector3(
                                     gesture.DeltaMove.x,
                                     0,
@@ -226,9 +228,14 @@ public class CardController : MonoBehaviour
                         break;
                 }
             }
+			else
+			{
+				this.Card.CardState = CardState.Normal;
+			}
         }
         else if (gesture.Phase == ContinuousGesturePhase.Ended)
         {
+			Debug.Log("End CardID" + this.Card.CardId);
             Unit unitDragTo = UnitManager.GetInstance().GetUnitInDirection(this.Card.CardId, this.dragDirection);
             switch (this.dragDirection)
             {
@@ -236,10 +243,12 @@ public class CardController : MonoBehaviour
                     {
                         if (gesture.TotalMove.y > MyTool.UnitGap)
                         {
+							Debug.Log("End 1111111");
                             this.MergeWithUnit(unitDragTo);
                         }
                         else
                         {
+							Debug.Log("End 222222222");
                             this.myTransform.localPosition = MyTool.CalculatePositionByRowAndColumn(this.Card.RowIndex, this.Card.ColumnIndex);
                         }
                     }
@@ -281,6 +290,8 @@ public class CardController : MonoBehaviour
                     }
                     break;
             }
+			this.Card.CardState = CardState.Normal;
+			this.CanMove = false;
         }
     }
 

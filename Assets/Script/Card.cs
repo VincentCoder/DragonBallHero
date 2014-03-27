@@ -5,6 +5,8 @@
     public int CardId { get; set; }
 
     public CardType CardType { get; set; }
+	
+	public CardState CardState { get; set; }
 
     public int ColumnIndex { get; set; }
 

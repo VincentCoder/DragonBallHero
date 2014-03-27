@@ -13,6 +13,8 @@ public class PlayingPanel : MonoBehaviour
     private CardType nextCardType;
 
     private UISprite nextSprite;
+	
+	private MyDirection dragDirection;
 
     #endregion
 
@@ -121,12 +123,37 @@ public class PlayingPanel : MonoBehaviour
     {
         if (gesture.Phase == ContinuousGesturePhase.Started)
         {
+			if (Mathf.Abs(gesture.DeltaMove.x) < Mathf.Abs(gesture.DeltaMove.y))
+            {
+                if (gesture.DeltaMove.y > 0)
+                {
+                    this.dragDirection = MyDirection.Up;
+                }
+                else
+                {
+                    this.dragDirection = MyDirection.Down;
+                }
+            }
+            else
+            {
+                if (gesture.DeltaMove.x > 0)
+                {
+                   this.dragDirection = MyDirection.Right;
+                }
+                else
+                {
+                    this.dragDirection = MyDirection.Left;
+                }
+            }
+			UnitManager.GetInstance().SendDragMessageToAllCards(gesture, this.dragDirection);
         }
         else if (gesture.Phase == ContinuousGesturePhase.Updated)
         {
+			UnitManager.GetInstance().SendDragMessageToAllCards(gesture, this.dragDirection);
         }
         else if (gesture.Phase == ContinuousGesturePhase.Ended)
         {
+			UnitManager.GetInstance().SendDragMessageToAllCards(gesture, this.dragDirection);
             this.AddNewCardToPanel();
             this.GenerateNextCardType();
         }

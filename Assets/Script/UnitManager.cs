@@ -75,6 +75,7 @@ public class UnitManager
         cardCtrl.Card.CardId = cardId;
         cardCtrl.Card.RowIndex = rowId;
         cardCtrl.Card.ColumnIndex = columnId;
+		cardCtrl.Card.CardState = CardState.Normal;
         cardCtrl.ResetCardType(cardType);
 
         this.unitArray[rowId, columnId].CardController = cardCtrl;
@@ -172,6 +173,74 @@ public class UnitManager
         }
         return null;
     }
+	
+	public void SendDragMessageToAllCards(DragGesture gesture, MyDirection direction)
+	{
+		switch(direction)
+		{
+			case MyDirection.Up:
+				{
+					for(int j = 0; j < MyTool.ColumnCount; j ++)
+					{
+						for(int i = 0; i < MyTool.RowCount; i ++)
+						{
+							Unit unit = this.unitArray[i, j];
+							if(unit != null && unit.CardController != null)
+							{
+								unit.CardController.OnDragCard(gesture, direction);
+							}
+						}
+					}
+				}
+				break;
+			case MyDirection.Down:
+				{
+					for(int j = 0; j < MyTool.ColumnCount; j ++)
+					{
+						for(int i = MyTool.RowCount - 1; i >= 0; i --)
+						{
+							Unit unit = this.unitArray[i, j];
+							if(unit != null && unit.CardController != null)
+							{
+								unit.CardController.OnDragCard(gesture, direction);
+							}
+						}
+					}
+				}
+				break;
+			case MyDirection.Left:
+				{
+					for(int i = 0; i < MyTool.RowCount; i ++)
+					{
+						for(int j = 0; j < MyTool.ColumnCount; j ++)
+						{
+							Unit unit = this.unitArray[i, j];
+							if(unit != null && unit.CardController != null)
+							{
+								unit.CardController.OnDragCard(gesture, direction);
+							}
+						}
+					}
+				}
+				break;
+			case MyDirection.Right:
+				{
+					for(int i = 0; i < MyTool.RowCount; i ++)
+					{
+						for(int j = MyTool.ColumnCount - 1; j >= 0; j --)
+						{
+							Unit unit = this.unitArray[i, j];
+							if(unit != null && unit.CardController != null)
+							{
+								unit.CardController.OnDragCard(gesture, direction);
+							}
+						}
+					}
+				}
+				break;
+			
+		}
+	}
 
     #endregion
 }
