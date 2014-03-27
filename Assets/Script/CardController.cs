@@ -19,6 +19,8 @@ public class CardController : MonoBehaviour
     private Transform myTransform;
 	
 	public bool CanMove;
+	
+	public float TweenMoveSpeed;
 
     #endregion
 
@@ -80,6 +82,7 @@ public class CardController : MonoBehaviour
         this.cardSprite = this.myTransform.FindChild("Card").GetComponent<UISprite>();
         this.frameSprite = this.myTransform.FindChild("Frame").GetComponent<UISprite>();
 		this.CanMove = false;
+		this.TweenMoveSpeed = 200f;
     }
 
     private void MergeWithUnit(Unit targetUnit)
@@ -92,9 +95,10 @@ public class CardController : MonoBehaviour
             this.Card.RowIndex = targetUnit.RowIndex;
             this.Card.ColumnIndex = targetUnit.ColumnIndex;
             targetUnit.CardController = this;
-            this.myTransform.localPosition = MyTool.CalculatePositionByRowAndColumn(
-                this.Card.RowIndex,
-                this.Card.ColumnIndex);
+			this.TweenMoveTo(this.Card.RowIndex, this.Card.ColumnIndex);
+            //this.myTransform.localPosition = MyTool.CalculatePositionByRowAndColumn(
+            //    this.Card.RowIndex,
+           //     this.Card.ColumnIndex);
         }
         else if (targetUnit != null && targetUnit.CardController.Card.CardType == this.Card.CardType
                  && this.Card.CardType != CardType.Wukong_11)
@@ -107,9 +111,10 @@ public class CardController : MonoBehaviour
 		else
 		{
 			Debug.Log("Merge 333333333333");
-			this.myTransform.localPosition = MyTool.CalculatePositionByRowAndColumn(
-                this.Card.RowIndex,
-                this.Card.ColumnIndex);
+			this.TweenMoveTo(this.Card.RowIndex, this.Card.ColumnIndex);
+			//this.myTransform.localPosition = MyTool.CalculatePositionByRowAndColumn(
+            //    this.Card.RowIndex,
+           //     this.Card.ColumnIndex);
 		}
     }
 
@@ -143,11 +148,13 @@ public class CardController : MonoBehaviour
                             if (gesture.TotalMove.y > MyTool.CardWidth + MyTool.UnitGap)
                             {
 								Debug.Log("1111111111111");
+								//this.TweenMoveTo(unitDragTo.RowIndex, unitDragTo.ColumnIndex);
                                 this.myTransform.localPosition = posDragTo;
                             }
                             else if (gesture.TotalMove.y < 0)
                             {
 								Debug.Log("22222222222222");
+								//this.TweenMoveTo(this.Card.RowIndex, this.Card.ColumnIndex);
                                 this.myTransform.localPosition = MyTool.CalculatePositionByRowAndColumn(this.Card.RowIndex, this.Card.ColumnIndex);
                             }
                             else
@@ -249,7 +256,8 @@ public class CardController : MonoBehaviour
                         else
                         {
 							Debug.Log("End 222222222");
-                            this.myTransform.localPosition = MyTool.CalculatePositionByRowAndColumn(this.Card.RowIndex, this.Card.ColumnIndex);
+							this.TweenMoveTo(this.Card.RowIndex, this.Card.ColumnIndex);
+                            //this.myTransform.localPosition = MyTool.CalculatePositionByRowAndColumn(this.Card.RowIndex, this.Card.ColumnIndex);
                         }
                     }
                     break;
@@ -261,7 +269,8 @@ public class CardController : MonoBehaviour
                         }
                         else
                         {
-                            this.myTransform.localPosition = MyTool.CalculatePositionByRowAndColumn(this.Card.RowIndex, this.Card.ColumnIndex);
+							this.TweenMoveTo(this.Card.RowIndex, this.Card.ColumnIndex);
+                            //this.myTransform.localPosition = MyTool.CalculatePositionByRowAndColumn(this.Card.RowIndex, this.Card.ColumnIndex);
                         }
                     }
                     break;
@@ -273,7 +282,8 @@ public class CardController : MonoBehaviour
                         }
                         else
                         {
-                            this.myTransform.localPosition = MyTool.CalculatePositionByRowAndColumn(this.Card.RowIndex, this.Card.ColumnIndex);
+							this.TweenMoveTo(this.Card.RowIndex, this.Card.ColumnIndex);
+                            //this.myTransform.localPosition = MyTool.CalculatePositionByRowAndColumn(this.Card.RowIndex, this.Card.ColumnIndex);
                         }
                     }
                     break;
@@ -285,7 +295,8 @@ public class CardController : MonoBehaviour
                         }
                         else
                         {
-                            this.myTransform.localPosition = MyTool.CalculatePositionByRowAndColumn(this.Card.RowIndex, this.Card.ColumnIndex);
+							this.TweenMoveTo(this.Card.RowIndex, this.Card.ColumnIndex);
+                            //this.myTransform.localPosition = MyTool.CalculatePositionByRowAndColumn(this.Card.RowIndex, this.Card.ColumnIndex);
                         }
                     }
                     break;
@@ -294,6 +305,22 @@ public class CardController : MonoBehaviour
 			this.CanMove = false;
         }
     }
+	
+	public void TweenMoveTo(int rowId, int columnId)
+	{
+		TweenPosition tweenPos = this.gameObject.GetComponent<TweenPosition>();
+		if(tweenPos == null)
+		{
+			tweenPos = this.gameObject.AddComponent<TweenPosition>();
+		}
+		tweenPos.style = UITweener.Style.Once;
+		tweenPos.method = UITweener.Method.Linear;
+		tweenPos.from = this.myTransform.localPosition;
+		tweenPos.to = MyTool.CalculatePositionByRowAndColumn(rowId, columnId);
+		//tweenPos.duration = Vector3.Distance(tweenPos.from, tweenPos.to) / this.TweenMoveSpeed;
+		tweenPos.duration = 0.2f;
+		tweenPos.Play();
+	}
 
     #endregion
 }
