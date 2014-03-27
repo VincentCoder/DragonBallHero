@@ -92,12 +92,14 @@ public class CardController : MonoBehaviour
         if (targetUnit != null && targetUnit.CardController == null)
         {
 			Debug.Log("Merge 1111111");
-            UnitManager.GetInstance().ClearUnitById(this.Card.CardId);
-            this.Card.CardId = targetUnit.UnitId;
-            this.Card.RowIndex = targetUnit.RowIndex;
-            this.Card.ColumnIndex = targetUnit.ColumnIndex;
-            targetUnit.CardController = this;
-			this.TweenMoveTo(this.Card.RowIndex, this.Card.ColumnIndex);
+            
+			this.TweenMoveTo(targetUnit.RowIndex, targetUnit.ColumnIndex, delegate{
+				UnitManager.GetInstance().ClearUnitById(this.Card.CardId);
+           	 	this.Card.CardId = targetUnit.UnitId;
+            	this.Card.RowIndex = targetUnit.RowIndex;
+            	this.Card.ColumnIndex = targetUnit.ColumnIndex;
+            	targetUnit.CardController = this;
+			});
             //this.myTransform.localPosition = MyTool.CalculatePositionByRowAndColumn(
             //    this.Card.RowIndex,
            //     this.Card.ColumnIndex);
@@ -325,19 +327,32 @@ public class CardController : MonoBehaviour
 	
 	public void TweenMoveTo(int rowId, int columnId, EventDelegate.Callback callback = null)
 	{
-		TweenPosition tweenPos = this.gameObject.GetComponent<TweenPosition>();
-		if(tweenPos == null)
-		{
-			tweenPos = this.gameObject.AddComponent<TweenPosition>();
-		}
+		//TweenPosition tweenPos = this.gameObject.GetComponent<TweenPosition>();
+		//if(tweenPos == null)
+		//{
+		//	tweenPos = this.gameObject.AddComponent<TweenPosition>();
+		//}
+		Vector3 fromPos = MyTool.CalculatePositionByRowAndColumn(this.Card.RowIndex, this.Card.ColumnIndex);
+		Vector3 toPos = MyTool.CalculatePositionByRowAndColumn(rowId, columnId);
+		TweenPosition tweenPos = TweenPosition.Begin(this.gameObject, 0.2f, toPos);
 		tweenPos.style = UITweener.Style.Once;
 		tweenPos.method = UITweener.Method.Linear;
-		tweenPos.from = this.myTransform.localPosition;
-		tweenPos.to = MyTool.CalculatePositionByRowAndColumn(rowId, columnId);
+		//tweenPos.from = this.myTransform.localPosition;
+		//tweenPos.to = MyTool.CalculatePositionByRowAndColumn(rowId, columnId);
 		//tweenPos.duration = Vector3.Distance(tweenPos.from, tweenPos.to) / this.TweenMoveSpeed;
-		tweenPos.duration = 0.3f;
+		Debug.Log("duration " + tweenPos.from + " " + tweenPos.to + " " + Vector3.Distance(tweenPos.from, tweenPos.to) / this.TweenMoveSpeed);
+		//tweenPos.duration = 0.3f;
+		if(callback == null)
+		{
+			System.Diagnostics.Stopwatch now = new System.Diagnostics.Stopwatch();
+			now.Start();
+			callback = delegate {
+				now.Stop();
+				Debug.Log("TotalTime " + now.ElapsedMilliseconds);
+			};
+		}
         tweenPos.onFinished.Add(new EventDelegate(callback));
-		tweenPos.PlayForward();
+		//tweenPos.PlayForward();
 	}
 
     #endregion
