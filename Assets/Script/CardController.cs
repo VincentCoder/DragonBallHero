@@ -81,11 +81,7 @@ public class CardController : MonoBehaviour
 
     private void MergeWithUnit(Unit targetUnit)
     {
-        if (targetUnit == null)
-        {
-            Debug.LogError("Invalid Unit!!");
-        }
-        if (targetUnit.CardController == null)
+        if (targetUnit != null && targetUnit.CardController == null)
         {
             UnitManager.GetInstance().ClearUnitById(this.Card.CardId);
             this.Card.CardId = targetUnit.UnitId;
@@ -96,21 +92,26 @@ public class CardController : MonoBehaviour
                 this.Card.RowIndex,
                 this.Card.ColumnIndex);
         }
-        else if (targetUnit.CardController.Card.CardType == this.Card.CardType
+        else if (targetUnit != null && targetUnit.CardController.Card.CardType == this.Card.CardType
                  && this.Card.CardType != CardType.Wukong_11)
         {
             UnitManager.GetInstance().ClearUnitById(this.Card.CardId);
-            targetUnit.CardController.Card.CardType = MyTool.GetNextLevelCardType(this.Card.CardType);
+            targetUnit.CardController.ResetCardType(MyTool.GetNextLevelCardType(this.Card.CardType));
             this.DestroySelf();
         }
+		else
+		{
+			this.myTransform.localPosition = MyTool.CalculatePositionByRowAndColumn(
+                this.Card.RowIndex,
+                this.Card.ColumnIndex);
+		}
     }
 
     private void OnDrag(DragGesture gesture)
     {
-        Debug.Log("OnDrag");
         if (gesture.Phase == ContinuousGesturePhase.Started)
         {
-            if (gesture.DeltaMove.x < gesture.DeltaMove.y)
+            if (Mathf.Abs(gesture.DeltaMove.x) < Mathf.Abs(gesture.DeltaMove.y))
             {
                 if (gesture.DeltaMove.y > 0)
                 {
@@ -132,14 +133,19 @@ public class CardController : MonoBehaviour
                     this.dragDirection = MyDirection.Left;
                 }
             }
-        }
+			Debug.Log("DragGesture Started : " + this.Card.CardId + " " + this.dragDirection + " " + this.myTransform.localPosition);
+        } 
         else if (gesture.Phase == ContinuousGesturePhase.Updated)
         {
-            Unit unitDragTo = UnitManager.GetInstance().GetUnitInDirection(this.Card.CardId, this.dragDirection);
+			Unit unitDragTo = UnitManager.GetInstance().GetUnitInDirection(this.Card.CardId, this.dragDirection);
+			Debug.Log("DragGesture Updated : " + this.Card.CardId + " " + unitDragTo);
+            if(unitDragTo != null) Debug.Log(" unitDragTo.CardController " + unitDragTo.CardController );
+			if(unitDragTo != null && unitDragTo.CardController != null) Debug.Log(" unitDragTo.CardController.Card.CardType " + unitDragTo.CardController.Card.CardType + " this.Card.CardType  " + this.Card.CardType);
             if (unitDragTo != null
                 && (unitDragTo.CardController == null || unitDragTo.CardController.Card.CardType == this.Card.CardType))
             {
                 Vector3 posDragTo = MyTool.CalculatePositionByRowAndColumn(unitDragTo.RowIndex, unitDragTo.ColumnIndex);
+				
                 switch (this.dragDirection)
                 {
                     case MyDirection.Up:
@@ -150,15 +156,12 @@ public class CardController : MonoBehaviour
                             }
                             else if (gesture.TotalMove.y < 0)
                             {
-                                this.myTransform.localPosition = new Vector3(
-                                    gesture.StartPosition.x,
-                                    gesture.StartPosition.y,
-                                    0);
+                                this.myTransform.localPosition = MyTool.CalculatePositionByRowAndColumn(this.Card.RowIndex, this.Card.ColumnIndex);
                             }
                             else
                             {
                                 this.myTransform.localPosition += new Vector3(
-                                    gesture.DeltaMove.x,
+                                    0,
                                     gesture.DeltaMove.y,
                                     0);
                             }
@@ -172,15 +175,12 @@ public class CardController : MonoBehaviour
                             }
                             else if (gesture.TotalMove.y > 0)
                             {
-                                this.myTransform.localPosition = new Vector3(
-                                    gesture.StartPosition.x,
-                                    gesture.StartPosition.y,
-                                    0);
+                                this.myTransform.localPosition = MyTool.CalculatePositionByRowAndColumn(this.Card.RowIndex, this.Card.ColumnIndex);
                             }
                             else
                             {
                                 this.myTransform.localPosition += new Vector3(
-                                    gesture.DeltaMove.x,
+                                    0,
                                     gesture.DeltaMove.y,
                                     0);
                             }
@@ -194,16 +194,13 @@ public class CardController : MonoBehaviour
                             }
                             else if (gesture.TotalMove.x > 0)
                             {
-                                this.myTransform.localPosition = new Vector3(
-                                    gesture.StartPosition.x,
-                                    gesture.StartPosition.y,
-                                    0);
+                                this.myTransform.localPosition = MyTool.CalculatePositionByRowAndColumn(this.Card.RowIndex, this.Card.ColumnIndex);
                             }
                             else
                             {
                                 this.myTransform.localPosition += new Vector3(
                                     gesture.DeltaMove.x,
-                                    gesture.DeltaMove.y,
+                                    0,
                                     0);
                             }
                         }
@@ -216,16 +213,13 @@ public class CardController : MonoBehaviour
                             }
                             else if (gesture.TotalMove.x < 0)
                             {
-                                this.myTransform.localPosition = new Vector3(
-                                    gesture.StartPosition.x,
-                                    gesture.StartPosition.y,
-                                    0);
-                            }
-                            else
-                            {
-                                this.myTransform.localPosition += new Vector3(
+                                this.myTransform.localPosition = MyTool.CalculatePositionByRowAndColumn(this.Card.RowIndex, this.Card.ColumnIndex);
+							}
+							else
+							{
+								this.myTransform.localPosition += new Vector3(
                                     gesture.DeltaMove.x,
-                                    gesture.DeltaMove.y,
+                                    0,
                                     0);
                             }
                         }
@@ -246,10 +240,7 @@ public class CardController : MonoBehaviour
                         }
                         else
                         {
-                            this.myTransform.localPosition = new Vector3(
-                                gesture.StartPosition.x,
-                                gesture.StartPosition.y,
-                                0);
+                            this.myTransform.localPosition = MyTool.CalculatePositionByRowAndColumn(this.Card.RowIndex, this.Card.ColumnIndex);
                         }
                     }
                     break;
@@ -261,10 +252,7 @@ public class CardController : MonoBehaviour
                         }
                         else
                         {
-                            this.myTransform.localPosition = new Vector3(
-                                gesture.StartPosition.x,
-                                gesture.StartPosition.y,
-                                0);
+                            this.myTransform.localPosition = MyTool.CalculatePositionByRowAndColumn(this.Card.RowIndex, this.Card.ColumnIndex);
                         }
                     }
                     break;
@@ -276,10 +264,7 @@ public class CardController : MonoBehaviour
                         }
                         else
                         {
-                            this.myTransform.localPosition = new Vector3(
-                                gesture.StartPosition.x,
-                                gesture.StartPosition.y,
-                                0);
+                            this.myTransform.localPosition = MyTool.CalculatePositionByRowAndColumn(this.Card.RowIndex, this.Card.ColumnIndex);
                         }
                     }
                     break;
@@ -291,10 +276,7 @@ public class CardController : MonoBehaviour
                         }
                         else
                         {
-                            this.myTransform.localPosition = new Vector3(
-                                gesture.StartPosition.x,
-                                gesture.StartPosition.y,
-                                0);
+                            this.myTransform.localPosition = MyTool.CalculatePositionByRowAndColumn(this.Card.RowIndex, this.Card.ColumnIndex);
                         }
                     }
                     break;

@@ -82,6 +82,7 @@ public class PlayingPanel : MonoBehaviour
                 break;
             }
         }
+		
         for (int i = 0; i < 2; i ++)
         {
             int randomLevel = Random.Range(0, 100);
